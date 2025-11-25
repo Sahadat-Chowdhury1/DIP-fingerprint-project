@@ -1,8 +1,11 @@
+# FEATURE FUSION: Minutiae + HOG + Wavelet
 
 import numpy as np
 from .preprocess import enhance_pipeline
 from .minutiae import extract_minutiae_features
 from .hog_wavelet import extract_hog_features, extract_wavelet_features
+
+#  Extract fused features for a single image
 
 def extract_features_for_image(path: str):
     enhanced = enhance_pipeline(path)
@@ -11,6 +14,9 @@ def extract_features_for_image(path: str):
     wav_vec = extract_wavelet_features(enhanced)
     feat = np.concatenate([minutiae_vec, hog_vec, wav_vec], axis=0)
     return feat
+
+
+# Build a feature matrix for a dataframe of images
 
 def build_feature_matrix(df, label_col="hand", tag="hand_class"):
     X = []
@@ -24,7 +30,6 @@ def build_feature_matrix(df, label_col="hand", tag="hand_class"):
         y.append(label)
         if (i + 1) % 50 == 0 or (i + 1) == n:
             print(f"[{tag}] Processed {i + 1}/{n} images...")
-    import numpy as np
     X = np.array(X, dtype=np.float32)
     y = np.array(y)
     return X, y

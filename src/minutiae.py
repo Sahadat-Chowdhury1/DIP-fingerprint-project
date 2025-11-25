@@ -1,12 +1,17 @@
+# MINUTIAE: Thinning, crossing-number detection, grid encoding
 
 import numpy as np
 from skimage import morphology
 import cv2
 from .config import MINUTIAE_GRID
 
+#  Thinning to skeleton
+
 def thin_image(binary_img):
     skeleton = morphology.skeletonize(binary_img > 0)
     return skeleton.astype(np.uint8)
+
+# Crossing-number minutiae detection
 
 def detect_minutiae(skeleton, border_margin=5, min_dist=4):
     h, w = skeleton.shape
@@ -57,6 +62,8 @@ def detect_minutiae(skeleton, border_margin=5, min_dist=4):
             filtered.append(m)
     return filtered
 
+# Minutiae grid encoding (8×8×2)
+
 def encode_minutiae_vector(minutiae_list, img_shape, grid=MINUTIAE_GRID):
     h, w = img_shape
     cell_h = h / grid
@@ -75,6 +82,9 @@ def encode_minutiae_vector(minutiae_list, img_shape, grid=MINUTIAE_GRID):
     if vec.max() > 0:
         vec = vec / vec.max()
     return vec
+
+
+# Full minutiae feature extraction pipeline
 
 def extract_minutiae_features(enhanced_img):
     smooth = cv2.GaussianBlur(enhanced_img, (3, 3), 0)

@@ -1,3 +1,4 @@
+# PREPROCESSING: CLAHE, normalization, resizing, Gabor enhancement
 
 import cv2
 import numpy as np
@@ -9,6 +10,9 @@ from .config import (
     GABOR_GAMMA,
     GABOR_NUM_ORI,
 )
+
+
+#  Basic grayscale preprocessing
 
 def load_image_gray(path: str):
     img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
@@ -38,6 +42,9 @@ def preprocess_image(path: str):
     img = resize_image(img, TARGET_SIZE)
     return img
 
+
+# Orientation field estimation
+
 def estimate_orientation(img, block_size=16):
     img = img.astype(np.float32)
     gx = cv2.Sobel(img, cv2.CV_32F, 1, 0, ksize=3)
@@ -55,6 +62,8 @@ def estimate_orientation(img, block_size=16):
             theta = 0.5 * np.arctan2(vxy, vxx + 1e-8)
             orientation[i : i + block_size, j : j + block_size] = theta
     return orientation
+
+# Gabor filter bank construction
 
 def build_gabor_kernels():
     kernels = []
@@ -75,6 +84,9 @@ def build_gabor_kernels():
     return kernels, np.array(thetas, dtype=np.float32)
 
 GABOR_KERNELS, GABOR_THETAS = build_gabor_kernels()
+
+
+# Orientation-guided Gabor enhancement
 
 def gabor_enhance_oriented(img, orientation, block_size=16):
     img_f = img.astype(np.float32)
@@ -98,6 +110,8 @@ def gabor_enhance_oriented(img, orientation, block_size=16):
             enhanced[i : i + block_size, j : j + block_size] = blended
     enhanced = cv2.normalize(enhanced, None, 0, 255, cv2.NORM_MINMAX)
     return enhanced.astype(np.uint8)
+
+#  Full preprocessing + enhancement pipeline
 
 def enhance_pipeline(path: str):
     pre = preprocess_image(path)

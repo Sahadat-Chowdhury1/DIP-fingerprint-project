@@ -1,8 +1,12 @@
+# TEXTURE FEATURES: HOG + Wavelet (DWT) feature extraction
 
 import numpy as np
 from skimage.feature import hog
 import pywt
 from .config import HOG_PPC, HOG_CPB
+
+
+#  HOG feature extraction
 
 def extract_hog_features(enhanced_img):
     hog_vec = hog(
@@ -15,6 +19,8 @@ def extract_hog_features(enhanced_img):
         feature_vector=True,
     )
     return hog_vec.astype(np.float32)
+
+# Wavelet (DWT) feature extraction
 
 def extract_wavelet_features(enhanced_img, wavelet="db4", level=3):
     coeffs = pywt.wavedec2(enhanced_img, wavelet=wavelet, level=level)

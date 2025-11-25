@@ -1,7 +1,10 @@
+# REALTIME: Single-image handedness prediction using trained model
 
 import os
 import numpy as np
 from .features import extract_features_for_image
+
+# 1) Core realtime prediction helper
 
 def realtime_hand_predict(img_path, model_results):
     svm = model_results["svm"]
@@ -22,9 +25,13 @@ def realtime_hand_predict(img_path, model_results):
         "image_path": img_path,
     }
 
+
+# Console demo wrapper for realtime fusion
+
 def realtime_fusion_demo(img_path, model_results):
     res = realtime_hand_predict(img_path, model_results)
     print(
-        f"[REALTIME FUSION] {os.path.basename(img_path)} → {res['predicted_label']} (margin={res['margin']:.3f}, conf≈{res['confidence']:.3f})"
+        f"[REALTIME FUSION] {os.path.basename(img_path)} → {res['predicted_label']} "
+        f"(margin={res['margin']:.3f}, conf≈{res['confidence']:.3f})"
     )
     return res

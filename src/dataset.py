@@ -1,3 +1,4 @@
+# DATASET: SOCOFing metadata construction and subject-wise split
 
 import os
 from pathlib import Path
@@ -9,6 +10,8 @@ from .config import (
     BASE_SOCOF_ALTERED_MEDIUM,
     BASE_SOCOF_ALTERED_HARD,
 )
+
+# Parse SOCOFing file names
 
 def parse_socof_filename(filename: str):
     name = os.path.splitext(os.path.basename(filename))[0]
@@ -32,12 +35,14 @@ def parse_socof_filename(filename: str):
         subject_id = None
     return subject_id, gender, hand, finger_name, alteration_type
 
+# Build full metadata table for all images
+
 def build_socof_metadata():
     records = []
 
     def scan_folder(base_path: Path, alteration_level: str):
         if not base_path.exists():
-            print(f"[WARN] Missing folder: {base_path}, skipping...")
+            print(f"[WARN] Missing folder: {base_path}, skipping.")
             return
         for root, dirs, files in os.walk(base_path):
             for f in files:
@@ -64,6 +69,8 @@ def build_socof_metadata():
 
     df = pd.DataFrame(records)
     return df
+
+#  Subject-wise train / val / test split
 
 def subject_wise_split(df, train_ratio=0.7, val_ratio=0.15, test_ratio=0.15):
     subjects = sorted(df["subject_id"].dropna().unique())
