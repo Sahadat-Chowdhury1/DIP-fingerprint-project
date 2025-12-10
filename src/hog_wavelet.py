@@ -1,13 +1,14 @@
-# TEXTURE FEATURES: HOG + Wavelet (DWT) feature extraction
+# TEXTURE FEATURES: HOG + Wavelet feature extraction
+
 
 import numpy as np
 from skimage.feature import hog
 import pywt
-from .config import HOG_PPC, HOG_CPB
+
+from config import HOG_PPC, HOG_CPB
 
 
-#  HOG feature extraction
-
+# HOG + Wavelet features
 def extract_hog_features(enhanced_img):
     hog_vec = hog(
         enhanced_img,
@@ -20,7 +21,6 @@ def extract_hog_features(enhanced_img):
     )
     return hog_vec.astype(np.float32)
 
-# Wavelet (DWT) feature extraction
 
 def extract_wavelet_features(enhanced_img, wavelet="db4", level=3):
     coeffs = pywt.wavedec2(enhanced_img, wavelet=wavelet, level=level)
@@ -28,9 +28,9 @@ def extract_wavelet_features(enhanced_img, wavelet="db4", level=3):
     for i, c in enumerate(coeffs):
         if i == 0:
             cA = c
-            features.extend([np.mean(cA), np.std(cA), np.sum(cA**2)])
+            features.extend([np.mean(cA), np.std(cA), np.sum(cA ** 2)])
         else:
             cH, cV, cD = c
-            for sb in [cH, cV, cD]:
-                features.extend([np.mean(sb), np.std(sb), np.sum(sb**2)])
+            for sb in (cH, cV, cD):
+                features.extend([np.mean(sb), np.std(sb), np.sum(sb ** 2)])
     return np.array(features, dtype=np.float32)
